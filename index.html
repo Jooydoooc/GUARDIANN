@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ELS – English Through Reading</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg1: #020617;
+      --bg2: #0f172a;
+      --accent: #38bdf8;
+      --accent-strong: #0ea5e9;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --card-bg: rgba(15, 23, 42, 0.96);
+      --border: rgba(148, 163, 184, 0.4);
+      --danger: #ef4444;
+      --success: #22c55e;
+      --warning: #facc15;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, var(--bg2), var(--bg1));
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 1200px;
+      min-height: 90vh;
+      background: linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.98),
+        rgba(15, 23, 42, 0.92)
+      );
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: radial-gradient(circle at top left, #0b1120, #020617);
+    }
+
+    header .title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header .badge {
+      font-size: 11px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--accent-soft);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--accent);
+    }
+
+    header .user-meta {
+      text-align: right;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      padding: 16px 20px 20px;
+      overflow: hidden;
+    }
+
+    .panel {
+      width: 100%;
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 18px 20px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.75);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .card p.desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .article-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .article-card {
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at top, #020617, #0f172a);
+      padding: 10px 12px;
+      cursor: not-allowed;
+      opacity: 0.45;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .article-card.active {
+      cursor: pointer;
+      opacity: 1;
+      border-color: var(--accent-soft);
+      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.25);
+    }
+
+    .article-card span.num {
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 14px;
+    }
+
+    .article-card span.status {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .article-card.active span.status {
+      color: var(--accent-strong);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-size: 13px;
+      font-weight: 500;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: #0b1120;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(56, 189, 248, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .btn.outline {
+      background: transparent;
+      color: var(--accent);
+      border-color: var(--accent-soft);
+      box-shadow: none;
+    }
+
+    .btn.danger {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: #fef2f2;
+    }
+
+    .btn.secondary {
+      background: linear-gradient(135deg, #4b5563, #1f2937);
+      color: #e5e7eb;
+    }
+
+    .btn.sm {
+      padding: 6px 10px;
+      font-size: 11px;
+    }
+
+    .inputs-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    input[type="text"] {
+      background: #020617;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent-strong);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+    }
+
+    .small-text {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .results-list {
+      max-height: 260px;
+      overflow-y: auto;
+      margin-top: 8px;
+      padding-right: 4px;
+      font-size: 12px;
+    }
+
+    .result-item {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      background: rgba(15, 23, 42, 0.96);
+    }
+
+    .result-item strong {
+      color: var(--accent);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      border: 1px solid var(--accent-soft);
+      color: var(--accent);
+      margin-right: 4px;
+    }
+
+    .tag.level-amateur {
+      border-color: #22c55e55;
+      color: #22c55e;
+    }
+
+    .tag.level-master {
+      border-color: #3b82f655;
+      color: #3b82f6;
+    }
+
+    .tag.level-epic {
+      border-color: #a855f755;
+      color: #a855f7;
+    }
+
+    .tag.level-titan {
+      border-color: #f9731655;
+      color: #f97316;
+    }
+
+    .article-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.4fr);
+      gap: 16px;
+      height: 100%;
+    }
+
+    .scroll-box {
+      max-height: 64vh;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    .passage {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #e5e7eb;
+      white-space: pre-wrap;
+    }
+
+    .passage p {
+      margin-bottom: 10px;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      border-radius: 999px;
+      padding: 2px 8px;
+      border: 1px solid var(--accent-soft);
+      font-size: 11px;
+      color: var(--accent);
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .postcards {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .postcard {
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      background: radial-gradient(circle at top, #020617, #0b1120);
+    }
+
+    .postcard .eng {
+      font-weight: 600;
+      color: var(--accent-strong);
+    }
+
+    .postcard .uz {
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    .postcard .def {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #d1d5db;
+    }
+
+    .quiz-type-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    .quiz-type-buttons .btn {
+      font-size: 11px;
+      padding: 5px 8px;
+    }
+
+    .quiz-panel {
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .question-block {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      background: rgba(15, 23, 42, 0.96);
+    }
+
+    .question-block label {
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .question-block input[type="text"] {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .options-list {
+      margin-top: 6px;
+    }
+
+    .options-list label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 3px;
+      cursor: pointer;
+    }
+
+    .quiz-footer {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .progress-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .progress-inner {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #a855f7);
+      transition: width 0.3s ease;
+    }
+
+    .message {
+      margin-top: 6px;
+      font-size: 12px;
+    }
+
+    .message.success {
+      color: var(--success);
+    }
+
+    .message.error {
+      color: var(--danger);
+    }
+
+    .general-level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .level-card {
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      cursor: pointer;
+      background: radial-gradient(circle at top, #020617, #0f172a);
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .level-card:hover {
+      border-color: var(--accent-soft);
+    }
+
+    .level-card strong {
+      font-size: 13px;
+    }
+
+    .level-card span.q-count {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 900px) {
+      main {
+        padding: 12px;
+      }
+      .article-layout {
+        grid-template-columns: 1fr;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+      header .user-meta {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <div class="title">
+        <span>ELS – English Through Reading</span>
+        <span class="badge">Beta</span>
+      </div>
+      <div class="user-meta">
+        <div id="user-label">Guest</div>
+        <div id="time-label">Time: --:--</div>
+      </div>
+    </header>
+
+    <main>
+      <!-- LOGIN PANEL -->
+      <section id="login-panel" class="panel active">
+        <div class="card" style="max-width: 480px; margin: 0 auto;">
+          <h2>Welcome to ELS Reading Platform</h2>
+          <p class="desc">
+            Log in to unlock your reading articles, vocabulary puzzles and
+            general tests. Your results will be saved automatically and
+            sent to your teacher.
+          </p>
+
+          <div class="inputs-grid">
+            <div class="input-group">
+              <label for="login-name">Name</label>
+              <input type="text" id="login-name" placeholder="e.g. Doniyor" />
+            </div>
+            <div class="input-group">
+              <label for="login-surname">Surname</label>
+              <input type="text" id="login-surname" placeholder="e.g. Eshmurodov" />
+            </div>
+            <div class="input-group">
+              <label for="login-group">Group</label>
+              <input type="text" id="login-group" placeholder="e.g. Elementary B1" />
+            </div>
+          </div>
+
+          <p class="small-text">
+            ⏰ Current system time:
+            <span id="login-time-preview">--</span><br />
+            This time will be recorded automatically when you log in.
+          </p>
+
+          <div style="margin-top: 12px; display: flex; gap: 8px; align-items: center;">
+            <button id="login-btn" class="btn">
+              Enter Platform
+            </button>
+            <span id="login-message" class="small-text" style="color: var(--danger);"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAIN MENU PANEL -->
+      <section id="main-panel" class="panel">
+        <div class="grid grid-2" style="width: 100%; height: 100%;">
+
+          <!-- LEFT: ARTICLES & GENERAL TEST -->
+          <div class="card" style="height: 100%;">
+            <h2>Main Menu</h2>
+            <p class="desc">
+              Choose an article, or challenge yourself with a General Test.
+            </p>
+
+            <div style="margin-top: 8px;">
+              <h3 style="font-size: 14px; margin-bottom: 6px;">Articles</h3>
+              <div class="article-grid" id="article-grid"></div>
+            </div>
+
+            <div style="margin-top: 14px;">
+              <h3 style="font-size: 14px; margin-bottom: 6px;">General Test</h3>
+              <p class="small-text">
+                Tests all articles together. Choose a level:
+              </p>
+              <div class="general-level-grid" id="general-level-grid">
+                <div class="level-card" data-level="Amateur" data-questions="25">
+                  <strong>Amateur</strong>
+                  <span class="q-count">25 questions</span>
+                  <span style="font-size: 11px; color: var(--text-muted);">
+                    Warm-up mode, perfect for practice.
+                  </span>
+                </div>
+                <div class="level-card" data-level="Master" data-questions="35">
+                  <strong>Master</strong>
+                  <span class="q-count">35 questions</span>
+                  <span style="font-size: 11px; color: var(--text-muted);">
+                    Solid review of key vocabulary.
+                  </span>
+                </div>
+                <div class="level-card" data-level="Epic" data-questions="45">
+                  <strong>Epic</strong>
+                  <span class="q-count">45 questions</span>
+                  <span style="font-size: 11px; color: var(--text-muted);">
+                    Challenging session, fewer hints.
+                  </span>
+                </div>
+                <div class="level-card" data-level="Titan" data-questions="60">
+                  <strong>Titan</strong>
+                  <span class="q-count">60 questions</span>
+                  <span style="font-size: 11px; color: var(--text-muted);">
+                    Marathon mode for vocabulary heroes.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: PREVIOUS RESULTS / STATS -->
+          <div class="card" style="height: 100%;">
+            <h2>Your Progress</h2>
+            <p class="desc">
+              Track your previous test scores and levels. Only this device
+              can see these results (stored locally).
+            </p>
+
+            <div id="stats-summary" class="small-text" style="margin-bottom: 6px;">
+              No quizzes completed yet.
+            </div>
+
+            <div class="results-list" id="results-list"></div>
+
+            <div style="margin-top: 10px; display: flex; gap: 8px;">
+              <button id="logout-btn" class="btn outline sm">
+                Log out
+              </button>
+              <button id="clear-results-btn" class="btn secondary sm">
+                Clear local results
+              </button>
+            </div>
+            <p class="small-text" style="margin-top: 6px;">
+              ⚠️ Clearing local results does not remove data already sent to your teacher.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ARTICLE PANEL (Article 12) -->
+      <section id="article-panel" class="panel">
+        <div class="article-layout">
+
+          <!-- LEFT: READING PASSAGE -->
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h2 id="article-title">Article 12 – The Changing Face of America</h2>
+                <p class="desc" id="article-subtitle">
+                  Read the passage carefully, then explore vocabulary and quizzes.
+                </p>
+              </div>
+              <button id="back-to-main-from-article" class="btn outline sm">
+                ← Back to main
+              </button>
+            </div>
+            <div class="scroll-box">
+              <article id="article-passage" class="passage"></article>
+            </div>
+          </div>
+
+          <!-- RIGHT: VOCAB POSTCARDS & QUIZZES -->
+          <div class="card">
+            <h2>Vocabulary & Quizzes</h2>
+            <p class="desc">
+              Preview key vocabulary, then test yourself with different puzzle types.
+            </p>
+
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                <span class="small-text">
+                  🎴 Vocabulary postcards (random 25 from 50)
+                </span>
+                <button id="refresh-postcards-btn" class="btn sm secondary">
+                  Shuffle cards
+                </button>
+              </div>
+              <div id="postcards-container" class="postcards"></div>
+            </div>
+
+            <div style="margin-top: 10px;">
+              <h3 style="font-size: 14px; margin-bottom: 4px;">Quiz types</h3>
+              <div class="quiz-type-buttons">
+                <button class="btn sm outline" data-quiz-type="eng-uz">
+                  English → Uzbek
+                </button>
+                <button class="btn sm outline" data-quiz-type="uz-eng">
+                  Uzbek → English
+                </button>
+                <button class="btn sm outline" data-quiz-type="eng-eng">
+                  English → English
+                </button>
+                <button class="btn sm outline" data-quiz-type="gap-fill">
+                  Gap filling
+                </button>
+                <button class="btn sm outline" data-quiz-type="comprehension">
+                  Comprehension
+                </button>
+              </div>
+              <p class="small-text">
+                Each quiz uses 15 random questions. Vocab source contains 50 items,
+                including collocations and phrasal verbs.
+              </p>
+            </div>
+
+            <div id="quiz-panel" class="quiz-panel" style="margin-top: 10px;"></div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    /*******************************************************
+     * DATA SECTION – ARTICLE CONTENT & VOCAB
+     *******************************************************/
+
+    const ARTICLE_DATA = {
+      12: {
+        id: 12,
+        title: "Article 12 – The Changing Face of America",
+        subtitle:
+          "Population growth, migration patterns and the changing ethnic make-up of the USA.",
+        passage: [
+          "This week the population of the USA reached 300 million for the first time. The 300 millionth American was possibly the child of a Latin American immigrant, perhaps in Los Angeles. In 1967 Life magazine identified the 200 millionth American as Robert Ken Woo, a fourth-generation Chinese-American from Atlanta. That was just a guess but America has reached an important point in its population growth and people are thinking about this in the same way they think about important birthdays or other important dates in their lives.",
+          "The US census office believes that one American is born every seven seconds, one dies every 13 seconds, and an immigrant arrives every 31 seconds. Add those figures together and the population increases by one person every 11 seconds. In the last 100 years the US has seen the largest increase in its population in its history. And this will probably continue through the 21st century, although the rate of increase of the population will probably stop rising around the year 2070. The population increased from 200 to 300 million in just 39 years and it will probably reach 400 million in just 37 years time.",
+          "Apart from the increase in population, the make-up of America and its culture and lifestyle are changing dramatically. The first major change is where Americans live. The main population centres are slowly moving from the northeast to the south and west. The fastest-growing states are Nevada, Arizona and Texas. More than half the population of America lives in 10 of the 50 states, most of them along the coasts.",
+          "William Frey, a population expert at the Brookings Institution in Washington, said people are now moving towards a new sunbelt outside Florida, Texas and California. “As the coastal areas become crowded, people have started to move further inland to places like Arizona, Nevada, Georgia and Tennessee.” At the same time the Great Plains, the cultural symbol of cowboy America, is becoming a myth. People are leaving the mid-western states and moving to the big cities. In the past 100 years the number of Americans living in urban and suburban areas has increased from 40% to 80%. The idea of the ‘frontier’ and living under an open sky still exists in movies, but fewer and fewer people live in such places.",
+          "Population change is also having an effect on the environment. According to the Centre for Environment and Population, many cities are changing because Americans believe that bigger means better. “When I travel abroad and come back, I’m always shocked by what I see here. Cars are bigger, people travel further distances, they build bigger houses,” the centre’s director, Victoria Markham, said. It is often said that the US has 5% of the world’s population but uses 25% of the world’s energy. Not many people know that each American now occupies about 20% more land for housing, schools, shops, roads and so on than he or she did 20 years ago. Almost 1,214 hectares of farmland are lost every day.",
+          "The most controversial change is in the ethnic composition of America and the role of immigration. In 1970 5% of Americans were new immigrants. Today the figure is 12.1% and it is rising. The largest single national group of immigrants is Mexican, and the largest ethnic group Hispanic (people from Spanish-speaking countries). By 2050 the census office believes that the number of non-Hispanic whites will fall from 69% in 2000 to about 50%, the number of Hispanics will double to 24%, the number of Asians will also double to 8%, and the number of African-Americans will increase slightly to 14%. Mr Frey thinks the increase in the Hispanic community, with their younger average ages and higher birthrates, will help to stop the fall in the number of white Americans.",
+          "Roy Beck, president of an immigration research group believes the long-term increase is the result of immigration. “If we had no immigration, the population would not be 300 million but about 245 million today.” The result, he says, is that the country is more crowded and there is less freedom and space. In short, America is becoming like Europe."
+        ],
+        // 50 vocab items: eng, uz (approximate), def, example
+        vocab: [
+          {
+            eng: "population",
+            uz: "aholi",
+            def: "the number of people living in a particular area",
+            ex: "The population of the USA reached 300 million."
+          },
+          {
+            eng: "census",
+            uz: "aholini ro‘yxatga olish",
+            def: "an official count of the people in a country",
+            ex: "The census office collects population data."
+          },
+          {
+            eng: "immigrant",
+            uz: "migrant, ko‘chib kelgan odam",
+            def: "someone who comes to live in another country",
+            ex: "The child of a Latin American immigrant was born in Los Angeles."
+          },
+          {
+            eng: "birth rate",
+            uz: "tug‘ilish darajasi",
+            def: "the number of babies born per year",
+            ex: "A higher birth rate increases the population."
+          },
+          {
+            eng: "death rate",
+            uz: "o‘lim darajasi",
+            def: "the number of people who die per year",
+            ex: "The death rate is lower than the birth rate."
+          },
+          {
+            eng: "increase",
+            uz: "ko‘payish, oshish",
+            def: "a rise in number or amount",
+            ex: "There has been a big increase in the US population."
+          },
+          {
+            eng: "dramatically",
+            uz: "keskin, juda katta darajada",
+            def: "in a sudden and noticeable way",
+            ex: "The lifestyle of Americans has changed dramatically."
+          },
+          {
+            eng: "lifestyle",
+            uz: "turmush tarzi",
+            def: "the way a person or group lives",
+            ex: "People’s lifestyle is different in cities and villages."
+          },
+          {
+            eng: "ethnic composition",
+            uz: "etnik tarkib",
+            def: "the different races or groups that form a population",
+            ex: "The ethnic composition of America is changing."
+          },
+          {
+            eng: "Hispanic",
+            uz: "ispancha so‘zlashuvchi, ispan tilli",
+            def: "relating to Spanish-speaking people",
+            ex: "Hispanic people are the largest ethnic group of immigrants."
+          },
+          {
+            eng: "non-Hispanic white",
+            uz: "ispancha bo‘lmagan oq tanli",
+            def: "a white person who is not Hispanic",
+            ex: "The number of non-Hispanic whites is expected to fall."
+          },
+          {
+            eng: "urban",
+            uz: "shahar",
+            def: "relating to a town or city",
+            ex: "More Americans now live in urban areas."
+          },
+          {
+            eng: "suburban",
+            uz: "shahar chetidagi",
+            def: "related to areas just outside a city",
+            ex: "Suburban neighborhoods are expanding."
+          },
+          {
+            eng: "frontier",
+            uz: "chegara, o‘rganilmagan hudud",
+            def: "a border or edge of a settled area",
+            ex: "The idea of the frontier is strong in American history."
+          },
+          {
+            eng: "Great Plains",
+            uz: "Buyuk tekisliklar (AQSh hududi)",
+            def: "a large flat area in the central US",
+            ex: "The Great Plains were once the centre of cowboy America."
+          },
+          {
+            eng: "myth",
+            uz: "afsona",
+            def: "something that people believe but is not really true now",
+            ex: "Cowboy America is becoming a myth."
+          },
+          {
+            eng: "coastal",
+            uz: "sohilga yaqin",
+            def: "near the sea or ocean",
+            ex: "Many Americans live in coastal states."
+          },
+          {
+            eng: "inland",
+            uz: "ichki qism, sohillardan uzoqda",
+            def: "away from the coast, inside a country",
+            ex: "People are moving further inland."
+          },
+          {
+            eng: "Plains",
+            uz: "tekisliklar",
+            def: "large flat areas of land",
+            ex: "The Great Plains are losing population."
+          },
+          {
+            eng: "pioneer",
+            uz: "ilk ko‘chmanchi, peshqadam",
+            def: "one of the first people to move to a new area",
+            ex: "Pioneers created a new life in the colonies."
+          },
+          {
+            eng: "environment",
+            uz: "atrof-muhit",
+            def: "the natural world around us",
+            ex: "Population change affects the environment."
+          },
+          {
+            eng: "hectare",
+            uz: "gektar",
+            def: "a unit of area equal to 10,000 square meters",
+            ex: "Over a thousand hectares of farmland are lost every day."
+          },
+          {
+            eng: "energy",
+            uz: "energiya",
+            def: "power from fuel, electricity, etc.",
+            ex: "The US uses 25% of the world’s energy."
+          },
+          {
+            eng: "occupy land",
+            uz: "yer egallamoq",
+            def: "to use or live on an area of land",
+            ex: "Each American occupies more land than before."
+          },
+          {
+            eng: "housing",
+            uz: "uy-joy",
+            def: "buildings for people to live in",
+            ex: "More housing is being built outside big cities."
+          },
+          {
+            eng: "immigration",
+            uz: "immigratsiya, ko‘chib kelish",
+            def: "the process of coming to live in another country",
+            ex: "Immigration has changed the US population."
+          },
+          {
+            eng: "birthrate",
+            uz: "tug‘ilish ko‘rsatkichi",
+            def: "the number of births per 1000 people per year",
+            ex: "The Hispanic birthrate is higher than average."
+          },
+          {
+            eng: "long-term",
+            uz: "uzoq muddatli",
+            def: "continuing for a long period of time",
+            ex: "Long-term population growth is linked to immigration."
+          },
+          {
+            eng: "crowded",
+            uz: "gavjum, juda ko‘p odamli",
+            def: "with too many people in one place",
+            ex: "Cities are becoming more crowded."
+          },
+          {
+            eng: "freedom",
+            uz: "erkinlik",
+            def: "the right to live, work or move as you want",
+            ex: "Some people feel there is less freedom and space."
+          },
+          {
+            eng: "space",
+            uz: "joy, bo‘sh joy",
+            def: "free area for living or moving",
+            ex: "There is less open space than before."
+          },
+          {
+            eng: "lifestyle change",
+            uz: "turmush tarzi o‘zgarishi",
+            def: "a big difference in the way people live",
+            ex: "Urbanisation has brought lifestyle changes."
+          },
+          {
+            eng: "move further inland",
+            uz: "ichki hududlarga ko‘chib o‘tmoq",
+            def: "to go away from the coast into the country",
+            ex: "Many families move further inland for cheaper housing."
+          },
+          {
+            eng: "build bigger houses",
+            uz: "yanada katta uylar qurmoq",
+            def: "to construct larger homes than before",
+            ex: "Americans often build bigger houses as their income grows."
+          },
+          {
+            eng: "travel further distances",
+            uz: "uzoq masofalarga sayohat qilmoq",
+            def: "to go longer distances regularly",
+            ex: "People travel further distances to work."
+          },
+          {
+            eng: "fastest-growing",
+            uz: "eng tez o‘sayotgan",
+            def: "increasing in size or number very quickly",
+            ex: "Nevada is one of the fastest-growing states."
+          },
+          {
+            eng: "population centre",
+            uz: "aholi markazi",
+            def: "an area where many people live",
+            ex: "Population centres are moving to the south and west."
+          },
+          {
+            eng: "controversial",
+            uz: "bahsli",
+            def: "causing disagreement or discussion",
+            ex: "Immigration is a controversial topic in politics."
+          },
+          {
+            eng: "ethnic group",
+            uz: "etnik guruh",
+            def: "people who share a common culture or background",
+            ex: "Hispanics are a major ethnic group in the US."
+          },
+          {
+            eng: "average age",
+            uz: "o‘rtacha yosh",
+            def: "the typical age when all ages are combined",
+            ex: "The Hispanic community has a younger average age."
+          },
+          {
+            eng: "to double",
+            uz: "ikki baravar bo‘lmoq",
+            def: "to become twice as much",
+            ex: "The number of Hispanics is expected to double."
+          },
+          {
+            eng: "to fall from ... to ...",
+            uz: "dan ... gacha kamaymoq",
+            def: "to decrease from one number to another",
+            ex: "The percentage may fall from 69% to 50%."
+          },
+          {
+            eng: "to rise to",
+            uz: "gacha ko‘tarilmoq",
+            def: "to increase to a certain level",
+            ex: "The immigrant share may rise to over 12%."
+          },
+          {
+            eng: "to move to the big cities",
+            uz: "katta shaharlarga ko‘chib o‘tmoq",
+            def: "to leave rural areas and live in big cities",
+            ex: "Many people move to the big cities for work."
+          },
+          {
+            eng: "open sky",
+            uz: "ochiq osmon ostida",
+            def: "outside area without many buildings",
+            ex: "The idea of living under an open sky is less common now."
+          },
+          {
+            eng: "to become like Europe",
+            uz: "Yevropaga o‘xshab qolmoq",
+            def: "to start to have similar conditions to Europe",
+            ex: "Some people say America is becoming like Europe."
+          },
+          {
+            eng: "crowded country",
+            uz: "gavjum mamlakat",
+            def: "a country with too many people in some areas",
+            ex: "Immigration makes the country more like a crowded country."
+          },
+          {
+            eng: "to reach a point",
+            uz: "ma'lum bosqichga yetmoq",
+            def: "to arrive at an important stage",
+            ex: "The US has reached an important point in its population growth."
+          },
+          {
+            eng: "important date",
+            uz: "muhim sana",
+            def: "a special day in history or in a person’s life",
+            ex: "People think about this population milestone like an important date."
+          }
+        ],
+        comprehension: [
+          {
+            question:
+              "According to the passage, how fast is the US population currently increasing?",
+            options: [
+              "By one person every 7 seconds",
+              "By one person every 11 seconds",
+              "By one person every 13 seconds",
+              "By one person every 31 seconds"
+            ],
+            correctIndex: 1
+          },
+          {
+            question:
+              "What does the US census office expect about the population by around 2070?",
+            options: [
+              "The population will start to fall sharply.",
+              "The population will stop growing completely.",
+              "The rate of increase will stop rising.",
+              "Immigration will stop completely."
+            ],
+            correctIndex: 2
+          },
+          {
+            question:
+              "Which states are mentioned as the fastest-growing in the passage?",
+            options: [
+              "Florida, Georgia and Tennessee",
+              "Nevada, Arizona and Texas",
+              "California, Florida and New York",
+              "Georgia, Tennessee and California"
+            ],
+            correctIndex: 1
+          },
+          {
+            question:
+              "What has happened to the number of Americans living in urban and suburban areas in the past 100 years?",
+            options: [
+              "It has stayed about the same.",
+              "It has fallen from 80% to 40%.",
+              "It has increased from 40% to 80%.",
+              "It has risen from 20% to 60%."
+            ],
+            correctIndex: 2
+          },
+          {
+            question:
+              "What belief about Americans is mentioned by Victoria Markham?",
+            options: [
+              "They think smaller is better.",
+              "They believe that bigger means better.",
+              "They prefer to live in small houses.",
+              "They want to use less energy."
+            ],
+            correctIndex: 1
+          },
+          {
+            question:
+              "How much of the world’s energy does the US use, according to the passage?",
+            options: [
+              "5%",
+              "10%",
+              "15%",
+              "25%"
+            ],
+            correctIndex: 3
+          },
+          {
+            question:
+              "What is happening to farmland in the USA, according to the text?",
+            options: [
+              "Almost 1,214 hectares of farmland are created every day.",
+              "Almost 1,214 hectares of farmland are lost every day.",
+              "Farmland is staying the same size.",
+              "Farmers are moving back to the Great Plains."
+            ],
+            correctIndex: 1
+          },
+          {
+            question:
+              "Which group is the largest single national group of immigrants in the US?",
+            options: [
+              "Hispanics in general",
+              "Asians",
+              "Mexicans",
+              "Non-Hispanic whites"
+            ],
+            correctIndex: 2
+          },
+          {
+            question:
+              "What does the census office predict about non-Hispanic whites by 2050?",
+            options: [
+              "They will make up about 50% of the population.",
+              "They will disappear completely.",
+              "They will grow to 80% of the population.",
+              "They will not change at all."
+            ],
+            correctIndex: 0
+          },
+          {
+            question:
+              "According to the passage, what will happen to the percentage of Hispanics by 2050?",
+            options: [
+              "It will stay at 12.1%.",
+              "It will double to 24%.",
+              "It will fall to 10%.",
+              "It will rise to 40%."
+            ],
+            correctIndex: 1
+          },
+          {
+            question:
+              "What does Roy Beck say would have happened without immigration?",
+            options: [
+              "The population would be higher than 300 million.",
+              "The population would be about 245 million.",
+              "The population would be only 100 million.",
+              "The population would be mostly Hispanic."
+            ],
+            correctIndex: 1
+          },
+          {
+            question:
+              "What is one result of the long-term population increase, according to Roy Beck?",
+            options: [
+              "The country is more crowded and there is less space.",
+              "The country has more empty land and freedom.",
+              "There is more farmland than ever before.",
+              "People are moving back to cowboy areas."
+            ],
+            correctIndex: 0
+          },
+          {
+            question:
+              "What does the text say about the idea of the ‘frontier’?",
+            options: [
+              "It is becoming more popular in real life.",
+              "It only exists in European culture.",
+              "It still exists in movies but fewer people live that way.",
+              "It has no connection with American history."
+            ],
+            correctIndex: 2
+          },
+          {
+            question:
+              "What has happened to the Great Plains, according to the passage?",
+            options: [
+              "They are the newest population centre.",
+              "They are becoming a myth as people leave.",
+              "They are now full of new pioneers.",
+              "They are now the most crowded place in America."
+            ],
+            correctIndex: 1
+          },
+          {
+            question:
+              "Which statement best summarises the overall message of the last paragraph?",
+            options: [
+              "Immigration has no effect on population growth.",
+              "Immigration reduces the population.",
+              "Immigration has made the country more crowded and more like Europe.",
+              "Immigration has made America more rural and empty."
+            ],
+            correctIndex: 2
+          }
+        ]
+      }
+    };
+
+    /*******************************************************
+     * UTILITY FUNCTIONS
+     *******************************************************/
+
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function showPanel(id) {
+      document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
+      const panel = $(id);
+      if (panel) panel.classList.add("active");
+    }
+
+    function formatDateTime(d) {
+      return (
+        d.getFullYear() +
+        "-" +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(d.getDate()).padStart(2, "0") +
+        " " +
+        String(d.getHours()).padStart(2, "0") +
+        ":" +
+        String(d.getMinutes()).padStart(2, "0")
+      );
+    }
+
+    function shuffleArray(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function getLevelFromScore(score, total) {
+      // Simple percentage thresholds: 25,35,45,60 refer to correct answers
+      if (score >= 60) return "Titan";
+      if (score >= 45) return "Epic";
+      if (score >= 35) return "Master";
+      if (score >= 25) return "Amateur";
+      return "Beginner";
+    }
+
+    /*******************************************************
+     * STATE
+     *******************************************************/
+
+    const STORAGE_KEY_CURRENT = "els_current_student";
+    const STORAGE_KEY_RESULTS_PREFIX = "els_results_";
+
+    let currentStudent = null; // {name, surname, group, loginTime}
+    let currentArticleId = 12;
+    let currentQuizState = null; // used for Telegram payload
+
+    /*******************************************************
+     * LOGIN LOGIC
+     *******************************************************/
+
+    function loadStudentFromStorage() {
+      const raw = localStorage.getItem(STORAGE_KEY_CURRENT);
+      if (!raw) return null;
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+
+    function saveStudentToStorage(student) {
+      localStorage.setItem(STORAGE_KEY_CURRENT, JSON.stringify(student));
+    }
+
+    function getResultsKey(student) {
+      if (!student) return null;
+      return (
+        STORAGE_KEY_RESULTS_PREFIX +
+        (student.name || "Unknown") +
+        "_" +
+        (student.surname || "Unknown") +
+        "_" +
+        (student.group || "Unknown")
+      );
+    }
+
+    function loadResults(student) {
+      const key = getResultsKey(student);
+      if (!key) return [];
+      const raw = localStorage.getItem(key);
+      if (!raw) return [];
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return [];
+      }
+    }
+
+    function saveResults(student, results) {
+      const key = getResultsKey(student);
+      if (!key) return;
+      localStorage.setItem(key, JSON.stringify(results));
+    }
+
+    function updateHeader() {
+      const userLabel = currentStudent
+        ? `${currentStudent.name || ""} ${currentStudent.surname || ""} – ${
+            currentStudent.group || ""
+          }`
+        : "Guest";
+      $("user-label").textContent = userLabel;
+
+      const now = new Date();
+      $("time-label").textContent = "Time: " + formatDateTime(now);
+      $("login-time-preview").textContent = formatDateTime(now);
+    }
+
+    function handleLogin() {
+      const name = $("login-name").value.trim();
+      const surname = $("login-surname").value.trim();
+      const group = $("login-group").value.trim();
+
+      if (!name || !surname || !group) {
+        $("login-message").textContent = "Please fill in all fields.";
+        return;
+      }
+
+      const now = new Date();
+      const loginTime = formatDateTime(now);
+
+      currentStudent = { name, surname, group, loginTime };
+      saveStudentToStorage(currentStudent);
+      $("login-message").textContent = "";
+      updateHeader();
+      renderMainMenu();
+      showPanel("main-panel");
+    }
+
+    function handleLogout() {
+      currentStudent = null;
+      localStorage.removeItem(STORAGE_KEY_CURRENT);
+      updateHeader();
+      showPanel("login-panel");
+    }
+
+    /*******************************************************
+     * MAIN MENU RENDERING
+     *******************************************************/
+
+    function renderArticleGrid() {
+      const grid = $("article-grid");
+      grid.innerHTML = "";
+      const totalArticles = 20;
+      for (let i = 1; i <= totalArticles; i++) {
+        const div = document.createElement("div");
+        div.className = "article-card";
+        if (i === 12) {
+          div.classList.add("active");
+          div.addEventListener("click", () => openArticle(12));
+        }
+
+        const numSpan = document.createElement("span");
+        numSpan.className = "num";
+        numSpan.textContent = "Article " + i;
+
+        const statusSpan = document.createElement("span");
+        statusSpan.className = "status";
+        statusSpan.textContent = i === 12 ? "Open" : "Coming soon";
+
+        div.appendChild(numSpan);
+        div.appendChild(statusSpan);
+        grid.appendChild(div);
+      }
+    }
+
+    function renderResults() {
+      const resultsContainer = $("results-list");
+      resultsContainer.innerHTML = "";
+
+      if (!currentStudent) {
+        $("stats-summary").textContent = "Please log in to see your results.";
+        return;
+      }
+
+      const results = loadResults(currentStudent);
+
+      if (!results.length) {
+        $("stats-summary").textContent =
+          "No quizzes completed yet. Start with Article 12 or a General Test.";
+        return;
+      }
+
+      // Summary
+      const totalQuizzes = results.length;
+      const best = results.reduce((max, r) => (r.percentage > max ? r.percentage : max), 0);
+      $("stats-summary").textContent =
+        `Quizzes completed: ${totalQuizzes} • Best score: ${Math.round(best)}%`;
+
+      // List
+      results
+        .slice()
+        .reverse()
+        .forEach((r) => {
+          const div = document.createElement("div");
+          div.className = "result-item";
+
+          const levelTag = document.createElement("span");
+          levelTag.className = "tag";
+          if (r.level === "Amateur") levelTag.classList.add("level-amateur");
+          if (r.level === "Master") levelTag.classList.add("level-master");
+          if (r.level === "Epic") levelTag.classList.add("level-epic");
+          if (r.level === "Titan") levelTag.classList.add("level-titan");
+          levelTag.textContent = r.level || "Level";
+
+          const strong = document.createElement("strong");
+          strong.textContent = `${r.quizLabel} – ${r.score}/${r.total} (${Math.round(
+            r.percentage
+          )}%)`;
+
+          const small = document.createElement("div");
+          small.className = "small-text";
+          small.textContent = r.timestamp;
+
+          div.appendChild(levelTag);
+          div.appendChild(strong);
+          div.appendChild(small);
+          resultsContainer.appendChild(div);
+        });
+    }
+
+    function renderMainMenu() {
+      renderArticleGrid();
+      renderResults();
+    }
+
+    /*******************************************************
+     * ARTICLE VIEW + VOCAB POSTCARDS
+     *******************************************************/
+
+    function openArticle(articleId) {
+      currentArticleId = articleId;
+      const article = ARTICLE_DATA[articleId];
+      if (!article) return;
+
+      $("article-title").textContent = article.title;
+      $("article-subtitle").textContent = article.subtitle;
+
+      const passageContainer = $("article-passage");
+      passageContainer.innerHTML = "";
+      article.passage.forEach((p) => {
+        const para = document.createElement("p");
+        para.textContent = p;
+        passageContainer.appendChild(para);
+      });
+
+      renderPostcards(articleId);
+      $("quiz-panel").innerHTML = "";
+      showPanel("article-panel");
+    }
+
+    function renderPostcards(articleId) {
+      const article = ARTICLE_DATA[articleId];
+      if (!article) return;
+
+      const container = $("postcards-container");
+      container.innerHTML = "";
+
+      const shuffled = shuffleArray(article.vocab);
+      const subset = shuffled.slice(0, 25);
+
+      subset.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "postcard";
+
+        const eng = document.createElement("div");
+        eng.className = "eng";
+        eng.textContent = item.eng;
+
+        const uz = document.createElement("div");
+        uz.className = "uz";
+        uz.textContent = item.uz;
+
+        const def = document.createElement("div");
+        def.className = "def";
+        def.textContent = item.def;
+
+        card.appendChild(eng);
+        card.appendChild(uz);
+        card.appendChild(def);
+        container.appendChild(card);
+      });
+    }
+
+    /*******************************************************
+     * QUIZ ENGINE
+     *******************************************************/
+
+    function startQuiz(articleId, quizType, opts = {}) {
+      const article = ARTICLE_DATA[articleId];
+      if (!article) return;
+
+      const vocab = shuffleArray(article.vocab);
+      const questions = [];
+      const numQuestions = opts.numQuestions || 15;
+
+      if (quizType === "eng-uz") {
+        vocab.slice(0, numQuestions).forEach((v) => {
+          questions.push({
+            type: "text",
+            prompt: `Translate into Uzbek: "${v.eng}"`,
+            correctAnswer: v.uz,
+            meta: v
+          });
+        });
+      } else if (quizType === "uz-eng") {
+        vocab.slice(0, numQuestions).forEach((v) => {
+          questions.push({
+            type: "text",
+            prompt: `Translate into English: "${v.uz}"`,
+            correctAnswer: v.eng,
+            meta: v
+          });
+        });
+      } else if (quizType === "eng-eng") {
+        vocab.slice(0, numQuestions).forEach((v) => {
+          questions.push({
+            type: "text",
+            prompt: `Explain or give a definition for: "${v.eng}" (short answer)`,
+            correctAnswer: v.def,
+            meta: v
+          });
+        });
+      } else if (quizType === "gap-fill") {
+        vocab.slice(0, numQuestions).forEach((v) => {
+          const sentence = v.ex || `Use the word "${v.eng}" in a sentence.`;
+          const gapSentence = sentence.replace(v.eng, "__________");
+          questions.push({
+            type: "text",
+            prompt: `Complete the gap with the correct word:\n${gapSentence}`,
+            correctAnswer: v.eng,
+            meta: v
+          });
+        });
+      } else if (quizType === "comprehension") {
+        const shuffledComp = shuffleArray(article.comprehension);
+        shuffledComp.slice(0, numQuestions).forEach((c) => {
+          questions.push({
+            type: "mcq",
+            question: c.question,
+            options: c.options,
+            correctIndex: c.correctIndex
+          });
+        });
+      }
+
+      renderQuizPanel({
+        articleId,
+        quizType,
+        isGeneralTest: false,
+        questions,
+        numQuestions
+      });
+    }
+
+    function startGeneralTest(level, questionsCount) {
+      // For now we only have article 12 vocab, but code supports multiple articles later
+      const allVocab = Object.values(ARTICLE_DATA).flatMap((a) => a.vocab);
+      const shuffled = shuffleArray(allVocab);
+      const numQuestions = questionsCount || 25;
+      const questions = [];
+
+      shuffled.slice(0, numQuestions).forEach((v) => {
+        // mix types a bit: 50% eng-uz, 25% uz-eng, 25% gap
+        const r = Math.random();
+        if (r < 0.5) {
+          questions.push({
+            type: "text",
+            prompt: `Translate into Uzbek: "${v.eng}"`,
+            correctAnswer: v.uz,
+            meta: v
+          });
+        } else if (r < 0.75) {
+          questions.push({
+            type: "text",
+            prompt: `Translate into English: "${v.uz}"`,
+            correctAnswer: v.eng,
+            meta: v
+          });
+        } else {
+          const gapSentence = (v.ex || `Use the word "${v.eng}" in a sentence.`).replace(
+            v.eng,
+            "__________"
+          );
+          questions.push({
+            type: "text",
+            prompt: `Complete the gap:\n${gapSentence}`,
+            correctAnswer: v.eng,
+            meta: v
+          });
+        }
+      });
+
+      renderQuizPanel({
+        articleId: null,
+        quizType: "general",
+        isGeneralTest: true,
+        generalLevel: level,
+        questions,
+        numQuestions
+      });
+
+      showPanel("article-panel");
+      $("article-title").textContent = `General Test – ${level}`;
+      $("article-subtitle").textContent =
+        "Mixed vocabulary test across all articles (currently Article 12 vocabulary).";
+      $("article-passage").innerHTML =
+        "<p>This is a general vocabulary test. Reading passage is not required – focus on the questions on the right.</p>";
+    }
+
+    function renderQuizPanel(config) {
+      const { articleId, quizType, isGeneralTest, generalLevel, questions, numQuestions } =
+        config;
+      const container = $("quiz-panel");
+      container.innerHTML = "";
+
+      const title = document.createElement("div");
+      const label = isGeneralTest
+        ? `General Test – ${generalLevel} (${numQuestions} questions)`
+        : `Quiz: ${quizType.replace("-", " → ").toUpperCase()} (${numQuestions} questions)`;
+      title.textContent = label;
+      title.style.fontWeight = "600";
+      title.style.marginBottom = "4px";
+      title.style.fontSize = "13px";
+      container.appendChild(title);
+
+      const progressBar = document.createElement("div");
+      progressBar.className = "progress-bar";
+      const progressInner = document.createElement("div");
+      progressInner.className = "progress-inner";
+      progressBar.appendChild(progressInner);
+      container.appendChild(progressBar);
+
+      const form = document.createElement("div");
+      form.id = "quiz-questions";
+
+      questions.forEach((q, index) => {
+        const block = document.createElement("div");
+        block.className = "question-block";
+
+        if (q.type === "text") {
+          const labelEl = document.createElement("label");
+          labelEl.textContent = `${index + 1}. ${q.prompt}`;
+          const input = document.createElement("input");
+          input.type = "text";
+          input.dataset.qIndex = index.toString();
+          block.appendChild(labelEl);
+          block.appendChild(input);
+        } else if (q.type === "mcq") {
+          const labelEl = document.createElement("label");
+          labelEl.textContent = `${index + 1}. ${q.question}`;
+          block.appendChild(labelEl);
+
+          const optsDiv = document.createElement("div");
+          optsDiv.className = "options-list";
+          q.options.forEach((opt, optIndex) => {
+            const optLabel = document.createElement("label");
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = `q_${index}`;
+            radio.value = optIndex.toString();
+            optLabel.appendChild(radio);
+            optLabel.appendChild(document.createTextNode(" " + opt));
+            optsDiv.appendChild(optLabel);
+          });
+          block.appendChild(optsDiv);
+        }
+
+        form.appendChild(block);
+      });
+
+      container.appendChild(form);
+
+      const footer = document.createElement("div");
+      footer.className = "quiz-footer";
+
+      const leftInfo = document.createElement("div");
+      leftInfo.className = "small-text";
+      leftInfo.textContent = "Answer all questions and click SUBMIT.";
+
+      const rightButtons = document.createElement("div");
+      rightButtons.style.display = "flex";
+      rightButtons.style.gap = "6px";
+
+      const cancelBtn = document.createElement("button");
+      cancelBtn.className = "btn secondary sm";
+      cancelBtn.textContent = "Cancel";
+      cancelBtn.addEventListener("click", () => {
+        container.innerHTML = "";
+      });
+
+      const submitBtn = document.createElement("button");
+      submitBtn.className = "btn sm";
+      submitBtn.textContent = "Submit quiz";
+
+      rightButtons.appendChild(cancelBtn);
+      rightButtons.appendChild(submitBtn);
+
+      footer.appendChild(leftInfo);
+      footer.appendChild(rightButtons);
+      container.appendChild(footer);
+
+      const message = document.createElement("div");
+      message.id = "quiz-message";
+      message.className = "message";
+      container.appendChild(message);
+
+      function calculateScore() {
+        let correct = 0;
+        const answeredQuestions = [];
+
+        questions.forEach((q, index) => {
+          let userAnswer = "";
+
+          if (q.type === "text") {
+            const input = container.querySelector(
+              `input[type="text"][data-q-index="${index}"]`
+            );
+            userAnswer = (input && input.value.trim()) || "";
+            const correctAns = (q.correctAnswer || "").toLowerCase().trim();
+            const userAnsNorm = userAnswer.toLowerCase().trim();
+
+            const isCorrect =
+              correctAns &&
+              (userAnsNorm === correctAns ||
+                userAnsNorm === correctAns.replace(/["“”]/g, ""));
+
+            if (isCorrect) correct++;
+
+            answeredQuestions.push({
+              question: q.prompt,
+              userAnswer,
+              correctAnswer: q.correctAnswer,
+              isCorrect
+            });
+          } else if (q.type === "mcq") {
+            const radios = container.querySelectorAll(`input[name="q_${index}"]`);
+            let selectedIndex = null;
+            radios.forEach((r) => {
+              if (r.checked) {
+                selectedIndex = parseInt(r.value, 10);
+              }
+            });
+            const isCorrect = selectedIndex === q.correctIndex;
+            if (isCorrect) correct++;
+            answeredQuestions.push({
+              question: q.question,
+              userAnswer:
+                selectedIndex != null ? q.options[selectedIndex] : "(no answer)",
+              correctAnswer: q.options[q.correctIndex],
+              isCorrect
+            });
+          }
+        });
+
+        return { correct, answeredQuestions };
+      }
+
+      submitBtn.addEventListener("click", async () => {
+        const { correct, answeredQuestions } = calculateScore();
+        const total = questions.length;
+        const percentage = (correct / total) * 100;
+        const level = isGeneralTest
+          ? generalLevel
+          : getLevelFromScore(correct, total);
+        const now = new Date();
+        const timestamp = formatDateTime(now);
+
+        progressInner.style.width = `${Math.round(percentage)}%`;
+
+        message.classList.remove("error");
+        message.classList.add("success");
+        message.textContent = `You scored ${correct}/${total} (${Math.round(
+          percentage
+        )}%). Level: ${level}. Results are being saved and sent to your teacher.`;
+
+        // Save to local results
+        if (currentStudent) {
+          const results = loadResults(currentStudent);
+          const quizLabel = isGeneralTest
+            ? `General (${generalLevel})`
+            : `Article ${articleId} – ${quizType}`;
+          results.push({
+            quizLabel,
+            score: correct,
+            total,
+            percentage,
+            level,
+            timestamp
+          });
+          saveResults(currentStudent, results);
+          renderResults();
+        }
+
+        // Save quiz state for Telegram
+        currentQuizState = {
+          studentName: currentStudent ? currentStudent.name : "",
+          studentSurname: currentStudent ? currentStudent.surname : "",
+          studentGroup: currentStudent ? currentStudent.group : "",
+          loginTime: currentStudent ? currentStudent.loginTime : "",
+          quizType,
+          articleId,
+          isGeneralTest,
+          generalLevel: generalLevel || null,
+          score: correct,
+          total,
+          percentage,
+          timestamp,
+          questions: answeredQuestions
+        };
+
+        // Send to Telegram via API
+        try {
+          await fetch("/api/submit", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(currentQuizState)
+          });
+        } catch (err) {
+          console.error("Error sending to Telegram:", err);
+          message.classList.remove("success");
+          message.classList.add("error");
+          message.textContent =
+            "Quiz saved locally, but there was an error sending data to Telegram.";
+        }
+      });
+    }
+
+    /*******************************************************
+     * EVENT LISTENERS
+     *******************************************************/
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Time updating
+      updateHeader();
+      setInterval(updateHeader, 60 * 1000);
+
+      // Try auto-login from localStorage
+      const stored = loadStudentFromStorage();
+      if (stored) {
+        currentStudent = stored;
+        updateHeader();
+        renderMainMenu();
+        showPanel("main-panel");
+      } else {
+        showPanel("login-panel");
+      }
+
+      $("login-btn").addEventListener("click", handleLogin);
+      $("logout-btn").addEventListener("click", handleLogout);
+
+      $("clear-results-btn").addEventListener("click", () => {
+        if (!currentStudent) return;
+        if (confirm("Clear all local results for this student on this device?")) {
+          saveResults(currentStudent, []);
+          renderResults();
+        }
+      });
+
+      $("back-to-main-from-article").addEventListener("click", () => {
+        showPanel("main-panel");
+      });
+
+      $("refresh-postcards-btn").addEventListener("click", () =>
+        renderPostcards(currentArticleId)
+      );
+
+      // Quiz type buttons inside article card
+      document
+        .querySelectorAll(".quiz-type-buttons .btn")
+        .forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const type = btn.getAttribute("data-quiz-type");
+            if (!type) return;
+            startQuiz(currentArticleId, type);
+          });
+        });
+
+      // General test level cards
+      document.querySelectorAll(".level-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          const level = card.getAttribute("data-level");
+          const questions = parseInt(card.getAttribute("data-questions") || "25", 10);
+          startGeneralTest(level, questions);
+        });
+      });
+
+      // Initial article data (if user jumps from main)
+      if (ARTICLE_DATA[12]) {
+        openArticle(12);
+        // Then go back if not logged in
+        if (!currentStudent) showPanel("login-panel");
+      }
+    });
+  </script>
+</body>
+</html>
